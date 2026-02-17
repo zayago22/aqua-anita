@@ -838,7 +838,7 @@
                         </div>
                         <div style="padding: 20px;">
                             <div style="border-radius: 12px; height: 200px; overflow: hidden; margin-bottom: 16px;">
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765.2!2d-99.0072!3d19.2645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDE1JzUyLjIiTiA5OcKwMDAnMjUuOSJX!5e0!3m2!1ses!2smx!4v1700000000000" width="100%" height="200" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.5!2d-99.0405041!3d19.3069591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce02e5ce54c23f%3A0xc85304666ff23a32!2sCalle%20Manuel%20M.%20L%C3%B3pez%2C%20Zapotitla%2C%20Tl%C3%A1huac%2C%20CDMX!5e0!3m2!1ses!2smx" width="100%" height="200" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                             </div>
                             <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 8px;">
                                 <i class="fas fa-map-marker-alt me-2" style="color: var(--green);"></i>
