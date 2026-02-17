@@ -77,12 +77,12 @@ aqua-anita/
 - ✅ Archivos huérfanos eliminados (welcome.blade.php, dashboard.blade.php de Breeze)
 
 ## 6) Pendientes priorizados (Next)
-1. **Crear repo en GitHub** (privado) y pushear el código — ver sección 9
-2. **Configurar Coolify** para deploy automático — ver sección 9
+1. ~~**Crear repo en GitHub**~~ ✅ (hecho sesión 4)
+2. ~~**Configurar Coolify**~~ ✅ (hecho sesión 5)
 3. **Subir imágenes reales a las 3 clases** desde el admin (`/admin/clases` → Editar cada una)
-4. **Coordenadas exactas de Google Maps** — las actuales son aproximadas
-5. **Comprar/configurar dominio** y apuntar DNS al VPS de Coolify
-6. **Cambiar contraseña admin** antes de producción
+4. ~~**Coordenadas exactas de Google Maps**~~ ✅ (hecho sesión 6 — `19.3069591, -99.0405041`)
+5. ~~**Comprar/configurar dominio**~~ ✅ (hecho sesión 6 — `www.aqua-anita.com.mx`)
+6. **Cambiar contraseña admin** antes de ir a producción definitiva
 
 ## 7) Problemas conocidos / Riesgos
 - `package.json` tiene Tailwind/Vite/Alpine configurados pero **NO se usan**. No borrar por si se necesitan después, pero no ejecutar `npm run dev/build`.
@@ -199,10 +199,12 @@ aqua-anita/
 6. **Bad Gateway**: Coolify tenía `Ports Exposes=8080` pero Apache escucha en `80` → cambiar a `80`
 7. **`@vite` error en login**: Layouts Breeze (`layouts/app.blade.php`, `layouts/guest.blade.php`) usaban `@vite()` que requiere build Node.js → reemplazado con Tailwind CSS CDN + Alpine.js CDN
 8. **`@vite` en comentario HTML**: Blade ejecuta directivas incluso dentro de comentarios HTML (`<!-- @vite -->`) → eliminada la mención de `@vite` del comentario
+9. **Imágenes rotas en HTTPS (mixed content)**: Traefik termina SSL y pasa HTTP al contenedor → Laravel generaba URLs `http://` → agregado `trustProxies(at: '*')` en `bootstrap/app.php`
 
 ---
 
-**Última actualización: 17 de febrero de 2026 (sesión 5)**
+**Última actualización: 17 de febrero de 2026 (sesión 6)**
 **Cambios sesión 3:** APP_NAME→Aqua-Anita, APP_LOCALE→es, registro público deshabilitado, Aviso de Privacidad creado (/privacidad), checkbox privacidad en formulario contacto, imágenes hero convertidas a WebP con `<picture>` fallback, archivos huérfanos Breeze eliminados, enlace privacidad en footer.
 **Cambios sesión 4:** Dockerfile multi-stage (PHP 8.3 + Apache), entrypoint.sh con auto-migración/seed/admin, docker/php.ini, .dockerignore, .env.production ejemplo, repo Git inicializado (branch main), guía completa de deploy en Coolify v4 agregada a este archivo.
 **Cambios sesión 5:** Deploy exitoso en Coolify v4. Dockerfile reescrito a single-stage. Entrypoint mejorado: crea `.env` con valores entrecomillados desde env vars del contenedor, genera `APP_KEY` si falta, siembra datos si `User::count()==0`. Corregido puerto (80 no 8080). Layouts Breeze: `@vite` reemplazado por Tailwind/Alpine CDN. Sitio en producción funcionando.
+**Cambios sesión 6:** Coordenadas Google Maps actualizadas a ubicación real (`19.3069591, -99.0405041`). Dominio `www.aqua-anita.com.mx` configurado (DNS + Coolify). Fix mixed content: `trustProxies(at: '*')` en `bootstrap/app.php` para que Laravel genere URLs HTTPS detrás de Traefik.
