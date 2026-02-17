@@ -24,7 +24,7 @@ class TestimonioController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'rol' => 'nullable|string|max:255',
-            'texto' => 'required|string',
+            'texto' => 'required|string|max:5000',
             'estrellas' => 'required|integer|min:1|max:5',
             'activo' => 'nullable|boolean',
             'orden' => 'nullable|integer',
@@ -48,7 +48,7 @@ class TestimonioController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'rol' => 'nullable|string|max:255',
-            'texto' => 'required|string',
+            'texto' => 'required|string|max:5000',
             'estrellas' => 'required|integer|min:1|max:5',
             'activo' => 'nullable|boolean',
             'orden' => 'nullable|integer',

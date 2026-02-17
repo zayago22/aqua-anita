@@ -51,16 +51,20 @@ if [ "$FRESH_DB" = true ] || [ "$USER_COUNT" = "0" ]; then
     php artisan db:seed --class=ContentSeeder --force 2>/dev/null || true
 
     echo "👤 Creando usuario admin..."
-    php artisan tinker --execute="
-        \App\Models\User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'hola@rekobit.com')],
-            [
-                'name' => 'Admin',
-                'password' => bcrypt(env('ADMIN_PASSWORD', 'AquaAnita2026!')),
-                'email_verified_at' => now(),
-            ]
-        );
-    "
+    if [ -z "$ADMIN_PASSWORD" ]; then
+        echo "⚠️  ADMIN_PASSWORD no está configurado — se omite creación de admin"
+    else
+        php artisan tinker --execute="
+            \App\Models\User::firstOrCreate(
+                ['email' => env('ADMIN_EMAIL', 'hola@rekobit.com')],
+                [
+                    'name' => 'Admin',
+                    'password' => bcrypt(env('ADMIN_PASSWORD')),
+                    'email_verified_at' => now(),
+                ]
+            );
+        "
+    fi
 fi
 
 # Limpiar y cachear para producción

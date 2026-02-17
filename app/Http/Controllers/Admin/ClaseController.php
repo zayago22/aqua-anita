@@ -26,8 +26,8 @@ class ClaseController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'icono' => 'nullable|string|max:100',
+            'descripcion' => 'nullable|string|max:10000',
+            'icono' => ['nullable', 'string', 'max:100', 'regex:/^[a-z0-9\s\-]+$/i'],
             'activo' => 'nullable|boolean',
             'orden' => 'nullable|integer',
             'imagen_principal' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
@@ -80,8 +80,8 @@ class ClaseController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'icono' => 'nullable|string|max:100',
+            'descripcion' => 'nullable|string|max:10000',
+            'icono' => ['nullable', 'string', 'max:100', 'regex:/^[a-z0-9\s\-]+$/i'],
             'activo' => 'nullable|boolean',
             'orden' => 'nullable|integer',
             'imagen_principal' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',

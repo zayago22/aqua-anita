@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/privacidad', function () { return view('privacidad'); })->name('privacidad');
 
-Route::post('/contacto', [ContactController::class, 'store'])->name('contacto.store');
+Route::post('/contacto', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contacto.store');
 
 // ===== ADMIN ROUTES =====
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
