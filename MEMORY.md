@@ -176,7 +176,7 @@ También agregar volumen para imágenes subidas:
 ## 10) Archivos de deploy (referencia rápida)
 ```
 aqua-anita/
-├── Dockerfile                    ← Multi-stage: PHP 8.3 builder + Apache prod
+├── Dockerfile                    ← Single-stage: PHP 8.3-apache (build rápido)
 ├── docker/
 │   ├── entrypoint.sh             ← Auto: migra, siembra, crea admin, cachea
 │   └── php.ini                   ← Config PHP producción (10MB upload, opcache)
@@ -187,6 +187,7 @@ aqua-anita/
 
 ---
 
-**Última actualización: 16 de febrero de 2026 (sesión 4)**
+**Última actualización: 17 de febrero de 2026 (sesión 5)**
 **Cambios sesión 3:** APP_NAME→Aqua-Anita, APP_LOCALE→es, registro público deshabilitado, Aviso de Privacidad creado (/privacidad), checkbox privacidad en formulario contacto, imágenes hero convertidas a WebP con `<picture>` fallback, archivos huérfanos Breeze eliminados, enlace privacidad en footer.
 **Cambios sesión 4:** Dockerfile multi-stage (PHP 8.3 + Apache), entrypoint.sh con auto-migración/seed/admin, docker/php.ini, .dockerignore, .env.production ejemplo, repo Git inicializado (branch main), guía completa de deploy en Coolify v4 agregada a este archivo.
+**Cambios sesión 5:** Dockerfile reescrito de multi-stage a **single-stage** (php:8.3-apache) para evitar timeout en Coolify — el build anterior compilaba extensiones PHP dos veces y superaba el límite de tiempo del VPS.
