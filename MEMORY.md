@@ -173,21 +173,34 @@ También agregar volumen para imágenes subidas:
 2. El `entrypoint.sh` automáticamente: crea BD, migra, siembra datos, crea admin, cachea
 3. Verificar en `https://tu-url/admin` → Login con las credenciales configuradas
 
+### Paso H — Configuración de red en Coolify (CRÍTICO)
+- **Ports Exposes**: `80` (NO 8080 — Apache escucha en 80)
+- **Port Mappings**: dejar vacío (Traefik se encarga)
+- Si pone "Bad Gateway" es porque el puerto expuesto no coincide con el del contenedor
+
 ## 10) Archivos de deploy (referencia rápida)
 ```
 aqua-anita/
 ├── Dockerfile                    ← Single-stage: PHP 8.3-apache (build rápido)
 ├── docker/
-│   ├── entrypoint.sh             ← Auto: migra, siembra, crea admin, cachea
+│   ├── entrypoint.sh             ← Auto: crea .env, genera APP_KEY, migra, siembra, crea admin, cachea
 │   └── php.ini                   ← Config PHP producción (10MB upload, opcache)
 ├── .dockerignore                 ← Excluye node_modules, vendor, tests, etc.
 ├── .env.production               ← Ejemplo de variables (NO se sube a Git)
 └── .gitignore                    ← Excluye .env, database.sqlite, vendor, etc.
 ```
 
+## 11) Problemas resueltos en deploy (bitácora)
+1. **Build timeout**: Dockerfile multi-stage compilaba extensiones 2 veces → reescrito a single-stage
+2. **`.env` no existe**: Coolify inyecta env vars al contenedor, no archivo → entrypoint crea `.env` desde `env | grep`
+3. **Espacios en valores** (`MAIL_FROM_NAME=Aqua-Anita Web`): Parser dotenv falla → valores entrecomillados con `sed`
+4. **`APP_KEY` vacía**: `key:generate` requiere línea `APP_KEY=` en `.env` → entrypoint la agrega si falta
+5. **Seeder no corría**: Dependía solo de `FRESH_DB` pero volumen persistía BD vieja → ahora verifica `User::count()==0`
+6. **Bad Gateway**: Coolify tenía `Ports Exposes=8080` pero Apache escucha en `80` → cambiar a `80`
+
 ---
 
 **Última actualización: 17 de febrero de 2026 (sesión 5)**
 **Cambios sesión 3:** APP_NAME→Aqua-Anita, APP_LOCALE→es, registro público deshabilitado, Aviso de Privacidad creado (/privacidad), checkbox privacidad en formulario contacto, imágenes hero convertidas a WebP con `<picture>` fallback, archivos huérfanos Breeze eliminados, enlace privacidad en footer.
 **Cambios sesión 4:** Dockerfile multi-stage (PHP 8.3 + Apache), entrypoint.sh con auto-migración/seed/admin, docker/php.ini, .dockerignore, .env.production ejemplo, repo Git inicializado (branch main), guía completa de deploy en Coolify v4 agregada a este archivo.
-**Cambios sesión 5:** Dockerfile reescrito de multi-stage a **single-stage** (php:8.3-apache) para evitar timeout en Coolify — el build anterior compilaba extensiones PHP dos veces y superaba el límite de tiempo del VPS.
+**Cambios sesión 5:** Deploy exitoso en Coolify v4. Dockerfile reescrito a single-stage. Entrypoint mejorado: crea `.env` con valores entrecomillados desde env vars del contenedor, genera `APP_KEY` si falta, siembra datos si `User::count()==0`. Corregido puerto (80 no 8080). Sitio en producción funcionando.
