@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Desarrollo
+node_modules
+tests
+.phpunit.cache
+phpunit.xml
+.editorconfig
+*.md
+!README.md
+
+# NPM/Vite (no se usan en producción)
+package.json
+package-lock.json
+vite.config.js
+tailwind.config.js
+postcss.config.js
+
+# IDE
+.vscode
+.idea
+.fleet
+.nova
+.zed
+
+# Env
+.env
+.env.backup
+.env.production
+.env.example
+
+# Docker (evitar recursión)
+docker-compose*.yml
+Dockerfile
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Laravel dev artifacts
+storage/logs/*
+!storage/logs/.gitkeep
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
