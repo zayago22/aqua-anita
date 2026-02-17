@@ -15,6 +15,10 @@ if [ ! -f .env ]; then
     if ! grep -q '^DB_DATABASE=' .env; then
         echo 'DB_DATABASE="/var/www/html/database/database.sqlite"' >> .env
     fi
+    # Asegurarse de que APP_KEY exista (key:generate lo necesita)
+    if ! grep -q '^APP_KEY=' .env; then
+        echo 'APP_KEY=' >> .env
+    fi
 fi
 
 # Crear base de datos SQLite si no existe
@@ -28,8 +32,10 @@ else
     FRESH_DB=false
 fi
 
-# Generar APP_KEY si no existe
-if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
+# Generar APP_KEY si no existe o está vacío en .env
+if ! grep -qE '^APP_KEY=.+' .env 2>/dev/null; then
+    # Asegurar que la línea APP_KEY= exista
+    grep -q '^APP_KEY=' .env 2>/dev/null || echo 'APP_KEY=' >> .env
     echo "🔑 Generando APP_KEY..."
     php artisan key:generate --force
 fi
@@ -38,19 +44,22 @@ fi
 echo "🗄️ Ejecutando migraciones..."
 php artisan migrate --force
 
-# Si es base de datos nueva, ejecutar seeder y crear admin
-if [ "$FRESH_DB" = true ]; then
+# Si es base de datos nueva O no hay usuarios, ejecutar seeder y crear admin
+USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null || echo "0")
+if [ "$FRESH_DB" = true ] || [ "$USER_COUNT" = "0" ]; then
     echo "🌱 Sembrando datos iniciales..."
-    php artisan db:seed --class=ContentSeeder --force
+    php artisan db:seed --class=ContentSeeder --force 2>/dev/null || true
 
     echo "👤 Creando usuario admin..."
     php artisan tinker --execute="
-        \App\Models\User::create([
-            'name' => 'Admin',
-            'email' => env('ADMIN_EMAIL', 'hola@rekobit.com'),
-            'password' => bcrypt(env('ADMIN_PASSWORD', 'AquaAnita2026!')),
-            'email_verified_at' => now(),
-        ]);
+        \App\Models\User::firstOrCreate(
+            ['email' => env('ADMIN_EMAIL', 'hola@rekobit.com')],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt(env('ADMIN_PASSWORD', 'AquaAnita2026!')),
+                'email_verified_at' => now(),
+            ]
+        );
     "
 fi
 
