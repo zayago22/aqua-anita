@@ -133,7 +133,7 @@ En Coolify → tu servicio → **Environment Variables**, agregar:
 APP_NAME=Aqua-Anita
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://tu-dominio.com   (o la URL temporal de Coolify)
+APP_URL=https://www.aqua-anita.com.mx
 APP_LOCALE=es
 DB_CONNECTION=sqlite
 SESSION_DRIVER=file
@@ -164,7 +164,7 @@ También agregar volumen para imágenes subidas:
 - **Destination:** `/var/www/html/storage/app/public`
 
 ### Paso F — Configurar dominio (cuando lo tengas)
-1. En Coolify → tu servicio → **General** → **Domains**: `https://tu-dominio.com`
+1. En Coolify → tu servicio → **General** → **Domains**: `https://www.aqua-anita.com.mx`
 2. Coolify genera SSL automáticamente con Let's Encrypt
 3. Apuntar DNS: Registro A → IP de tu VPS
 
