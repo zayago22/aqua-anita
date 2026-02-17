@@ -197,10 +197,12 @@ aqua-anita/
 4. **`APP_KEY` vacía**: `key:generate` requiere línea `APP_KEY=` en `.env` → entrypoint la agrega si falta
 5. **Seeder no corría**: Dependía solo de `FRESH_DB` pero volumen persistía BD vieja → ahora verifica `User::count()==0`
 6. **Bad Gateway**: Coolify tenía `Ports Exposes=8080` pero Apache escucha en `80` → cambiar a `80`
+7. **`@vite` error en login**: Layouts Breeze (`layouts/app.blade.php`, `layouts/guest.blade.php`) usaban `@vite()` que requiere build Node.js → reemplazado con Tailwind CSS CDN + Alpine.js CDN
+8. **`@vite` en comentario HTML**: Blade ejecuta directivas incluso dentro de comentarios HTML (`<!-- @vite -->`) → eliminada la mención de `@vite` del comentario
 
 ---
 
 **Última actualización: 17 de febrero de 2026 (sesión 5)**
 **Cambios sesión 3:** APP_NAME→Aqua-Anita, APP_LOCALE→es, registro público deshabilitado, Aviso de Privacidad creado (/privacidad), checkbox privacidad en formulario contacto, imágenes hero convertidas a WebP con `<picture>` fallback, archivos huérfanos Breeze eliminados, enlace privacidad en footer.
 **Cambios sesión 4:** Dockerfile multi-stage (PHP 8.3 + Apache), entrypoint.sh con auto-migración/seed/admin, docker/php.ini, .dockerignore, .env.production ejemplo, repo Git inicializado (branch main), guía completa de deploy en Coolify v4 agregada a este archivo.
-**Cambios sesión 5:** Deploy exitoso en Coolify v4. Dockerfile reescrito a single-stage. Entrypoint mejorado: crea `.env` con valores entrecomillados desde env vars del contenedor, genera `APP_KEY` si falta, siembra datos si `User::count()==0`. Corregido puerto (80 no 8080). Sitio en producción funcionando.
+**Cambios sesión 5:** Deploy exitoso en Coolify v4. Dockerfile reescrito a single-stage. Entrypoint mejorado: crea `.env` con valores entrecomillados desde env vars del contenedor, genera `APP_KEY` si falta, siembra datos si `User::count()==0`. Corregido puerto (80 no 8080). Layouts Breeze: `@vite` reemplazado por Tailwind/Alpine CDN. Sitio en producción funcionando.
