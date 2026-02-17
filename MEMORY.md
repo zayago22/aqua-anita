@@ -77,10 +77,12 @@ aqua-anita/
 - ✅ Archivos huérfanos eliminados (welcome.blade.php, dashboard.blade.php de Breeze)
 
 ## 6) Pendientes priorizados (Next)
-1. **Subir imágenes reales a las 3 clases** desde el admin (`/admin/clases` → Editar cada una)
-2. **Coordenadas exactas de Google Maps** — las actuales son aproximadas
-3. **Deploy a producción** — dominio, SSL, hosting, cambiar APP_ENV a production, APP_DEBUG a false
-4. **Cambiar contraseña admin** antes de producción (actualmente `AquaAnita2026!`)
+1. **Crear repo en GitHub** (privado) y pushear el código — ver sección 9
+2. **Configurar Coolify** para deploy automático — ver sección 9
+3. **Subir imágenes reales a las 3 clases** desde el admin (`/admin/clases` → Editar cada una)
+4. **Coordenadas exactas de Google Maps** — las actuales son aproximadas
+5. **Comprar/configurar dominio** y apuntar DNS al VPS de Coolify
+6. **Cambiar contraseña admin** antes de producción
 
 ## 7) Problemas conocidos / Riesgos
 - `package.json` tiene Tailwind/Vite/Alpine configurados pero **NO se usan**. No borrar por si se necesitan después, pero no ejecutar `npm run dev/build`.
@@ -88,17 +90,103 @@ aqua-anita/
 - La contraseña del admin (`AquaAnita2026!`) está en texto plano solo en el historial — cambiarla si se va a producción.
 - `.env` tiene credenciales SMTP reales — **nunca commitear a git público**.
 - El `show` de `admin/testimonios` y `admin/clases` (auto-generados por `Route::resource`) no tiene vista — dará error si se accede directamente. No hay links que apunten ahí.
+- **SQLite en Docker**: La BD debe vivir en un **volumen persistente** (`/var/www/html/database`), si no se pierde con cada redeploy. Coolify permite configurar esto.
 
-## 8) Cómo continuar (pasos exactos)
+## 8) Desarrollo local (pasos exactos)
 - Paso 1: `cd C:\laragon\www\aqua-anita`
-- Paso 2: Iniciar servidor: `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe artisan serve`
-- Paso 3: Abrir `http://localhost:8000` (sitio público) o `http://localhost:8000/admin` (panel admin)
-- Paso 4: Login admin: `hola@rekobit.com` / `AquaAnita2026!`
-- Paso 5: Si hay errores de BD o migraciones: `php artisan migrate`
-- Paso 6: Si falta symlink de storage: `php artisan storage:link`
-- Paso 7: Si necesitas limpiar caches: `php artisan config:clear; php artisan cache:clear; php artisan view:clear`
+- Paso 2: Agregar Git al PATH: `$env:PATH = "C:\laragon\bin\git\cmd;$env:PATH"`
+- Paso 3: Iniciar servidor: `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe artisan serve`
+- Paso 4: Abrir `http://localhost:8000` (sitio público) o `http://localhost:8000/admin` (panel admin)
+- Paso 5: Login admin: `hola@rekobit.com` / `AquaAnita2026!`
+- Paso 6: Si hay errores de BD o migraciones: `php artisan migrate`
+- Paso 7: Si falta symlink de storage: `php artisan storage:link`
+- Paso 8: Si necesitas limpiar caches: `php artisan config:clear; php artisan cache:clear; php artisan view:clear`
+
+## 9) Deploy en Coolify v4 (guía paso a paso)
+
+### Paso A — Crear repositorio en GitHub
+1. Ir a https://github.com/new
+2. Nombre: `aqua-anita` | Privado: ✅ | NO inicializar con README
+3. Copiar la URL del repo (ej: `https://github.com/TU_USUARIO/aqua-anita.git`)
+4. En terminal local:
+```bash
+$env:PATH = "C:\laragon\bin\git\cmd;$env:PATH"
+cd C:\laragon\www\aqua-anita
+git remote add origin https://github.com/TU_USUARIO/aqua-anita.git
+git push -u origin main
+```
+
+### Paso B — Conectar Coolify con GitHub
+1. En Coolify dashboard → **Sources** → **+ New Source** → **GitHub App**
+2. Seguir el wizard para crear una GitHub App (autoriza acceso al repo `aqua-anita`)
+3. Una vez conectado, el repo aparecerá en la lista
+
+### Paso C — Crear el servicio en Coolify
+1. **Projects** → **+ New Project** → Nombre: "Aqua-Anita"
+2. **+ New Resource** → **Docker Based** → **Dockerfile**
+3. Seleccionar el repo `aqua-anita`, branch `main`
+4. Coolify detectará el `Dockerfile` automáticamente
+
+### Paso D — Configurar variables de entorno
+En Coolify → tu servicio → **Environment Variables**, agregar:
+```
+APP_NAME=Aqua-Anita
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tu-dominio.com   (o la URL temporal de Coolify)
+APP_LOCALE=es
+DB_CONNECTION=sqlite
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+LOG_CHANNEL=stack
+LOG_LEVEL=warning
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=hola@rekobit.com
+MAIL_PASSWORD=sbuepbiaeppmzfry
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=hola@rekobit.com
+MAIL_FROM_NAME=Aqua-Anita Web
+ADMIN_EMAIL=hola@rekobit.com
+ADMIN_PASSWORD=AquaAnita2026!
+```
+
+### Paso E — Configurar volumen persistente (CRÍTICO)
+En Coolify → tu servicio → **Storages / Volumes**:
+- **Source:** un nombre como `aqua-anita-database`
+- **Destination:** `/var/www/html/database`
+- Esto mantiene la BD SQLite entre redeploys
+
+También agregar volumen para imágenes subidas:
+- **Source:** `aqua-anita-storage`
+- **Destination:** `/var/www/html/storage/app/public`
+
+### Paso F — Configurar dominio (cuando lo tengas)
+1. En Coolify → tu servicio → **General** → **Domains**: `https://tu-dominio.com`
+2. Coolify genera SSL automáticamente con Let's Encrypt
+3. Apuntar DNS: Registro A → IP de tu VPS
+
+### Paso G — Deploy
+1. Click en **Deploy** → Coolify construye la imagen Docker y la ejecuta
+2. El `entrypoint.sh` automáticamente: crea BD, migra, siembra datos, crea admin, cachea
+3. Verificar en `https://tu-url/admin` → Login con las credenciales configuradas
+
+## 10) Archivos de deploy (referencia rápida)
+```
+aqua-anita/
+├── Dockerfile                    ← Multi-stage: PHP 8.3 builder + Apache prod
+├── docker/
+│   ├── entrypoint.sh             ← Auto: migra, siembra, crea admin, cachea
+│   └── php.ini                   ← Config PHP producción (10MB upload, opcache)
+├── .dockerignore                 ← Excluye node_modules, vendor, tests, etc.
+├── .env.production               ← Ejemplo de variables (NO se sube a Git)
+└── .gitignore                    ← Excluye .env, database.sqlite, vendor, etc.
+```
 
 ---
 
-**Última actualización: 16 de febrero de 2026 (sesión 3)**
+**Última actualización: 16 de febrero de 2026 (sesión 4)**
 **Cambios sesión 3:** APP_NAME→Aqua-Anita, APP_LOCALE→es, registro público deshabilitado, Aviso de Privacidad creado (/privacidad), checkbox privacidad en formulario contacto, imágenes hero convertidas a WebP con `<picture>` fallback, archivos huérfanos Breeze eliminados, enlace privacidad en footer.
+**Cambios sesión 4:** Dockerfile multi-stage (PHP 8.3 + Apache), entrypoint.sh con auto-migración/seed/admin, docker/php.ini, .dockerignore, .env.production ejemplo, repo Git inicializado (branch main), guía completa de deploy en Coolify v4 agregada a este archivo.
