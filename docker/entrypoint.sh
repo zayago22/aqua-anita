@@ -8,10 +8,12 @@ cd /var/www/html
 # ── Crear .env desde variables de entorno (Coolify las inyecta como env vars) ──
 if [ ! -f .env ]; then
     echo "📄 Creando .env desde variables de entorno..."
-    env | grep -E '^(APP_|DB_|MAIL_|CACHE_|SESSION_|QUEUE_|LOG_|ADMIN_|BROADCAST_)' | sort > .env
+    # Escribir cada variable con valor entrecomillado (soporta espacios)
+    env | grep -E '^(APP_|DB_|MAIL_|CACHE_|SESSION_|QUEUE_|LOG_|ADMIN_|BROADCAST_)' | sort | \
+        sed 's/=\(.*\)/="\1"/' > .env
     # Asegurarse de que DB_DATABASE apunte al SQLite
     if ! grep -q '^DB_DATABASE=' .env; then
-        echo "DB_DATABASE=/var/www/html/database/database.sqlite" >> .env
+        echo 'DB_DATABASE="/var/www/html/database/database.sqlite"' >> .env
     fi
 fi
 
